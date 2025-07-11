@@ -1,74 +1,75 @@
-# 低価格で簡単に作れる汎用停電アラート
+# Low-Cost, Easy-to-Build General-Purpose Power Outage Alert
 
-## 概要
+## Overview
 
-商用電源の停電を検知して **LINEに通知**します。  
-実験用の観測機器（生物・化学・物理学実験など）の停電監視にご活用ください。
+This device detects power outages in commercial electricity and sends **notifications via LINE**.  
+It is ideal for monitoring outages in experimental observation equipment (biology, chemistry, physics, etc.).
 
-> ⚠️ **注意**：本装置の不具合によって重大な損失を被るような機器には使用しないでください。
-
----
-
-## 原理
-
-Raspberry PiのGPIO入力を用いて停電を検知します。  
-商用AC100Vは直接入力できないため、**ACアダプターとUSBケーブルでDCに変換**してラズパイに入力し、電圧が約3Vを下回ると「停電」と判断します。
+> ⚠️ **Caution**: Do not use this device with equipment where malfunction could cause serious damage.
 
 ---
 
-## 用意するもの
+## Principle
 
-- Raspberry Pi Model 3 または 4  
-- パススルー型モバイルバッテリー（充電しながら給電できるもの）  
-- AC100V → USBアダプター ＋ USBケーブル（100均でOK）  
-- 適当な導線 2本（USBからラズパイへ）  
-- カッターナイフ（USBケーブルの切断・被覆むき用）  
-- LINE アカウント  
-
-> ※ Raspberry Pi のセットアップ（ディスプレイ・キーボード・Wi-Fi接続など）は済んでいる前提です。  
-> ※ コンセントは2口必要です（電源用・検出用）。足りない場合は電源タップ等を利用してください。
+The system detects power outages using the GPIO input of a Raspberry Pi.  
+Since AC 100V cannot be input directly, it is **converted to DC via an AC adapter and USB cable**, then connected to the Pi.  
+When the voltage drops below approximately 3V, it is recognized as a "power outage".
 
 ---
 
-## ステップ
+## Required Items
 
-1. **ラズパイ給電経路の構築**  
-   モバイルバッテリーをコンセントに常時接続しつつ、ラズパイへ給電してください。停電時でもしばらく動作を維持できます。
+- Raspberry Pi Model 3 or 4  
+- Pass-through mobile battery (capable of charging while supplying power)  
+- AC100V → USB adapter + USB cable (100-yen shop is fine)  
+- Two wires (to connect USB to Pi)  
+- Cutter knife (for cutting and stripping the USB cable)  
+- LINE account  
 
-2. **USBケーブルの加工**  
-   片方を切断して赤と黒の線（または代表2本）を取り出し、導線をむきます。取り出した線に適当な導線を延長接続し、テープや熱収縮チューブで保護します。
-
-3. **ラズパイとの接続**  
-   USBケーブルの反対側をACアダプターへ、延長した線の端をラズパイのGPIOピンへ接続します。  
-   - 赤い線 → 左上から7番目（GPIO 4）  
-   - 黒い線 → 左上から8番目（GND）
-
-4. **LINE Notifyトークンの取得**  
-   1. [LINE Notify](https://notify-bot.line.me/ja/) にアクセス  
-   2. ログイン → マイページ → 「トークンを発行」  
-   3. トークン名を入力、通知先（1対1 or グループ）を選択  
-   4. 表示された**アクセストークンをコピー**しておく
-
-5. **（グループ通知の場合）グループにLINE Notifyを招待**  
-
-6. **スクリプトの準備**  
-   このリポジトリから `main.py` をダウンロードしてラズパイに移し、12行目の `TOKEN = "..."` に先ほどのトークンを貼り付けます。
-
-7. **スクリプトの実行**  
-   ACアダプターをコンセントに挿し、`main.py` を Thonny などで実行してください。  
-   - コンソールに「正常監視中」と出たら成功  
-   - ACアダプターを抜くと「停電が発生しています〜」というLINE通知が届きます
+> ※ Raspberry Pi setup (display, keyboard, Wi-Fi, etc.) is assumed to be completed.  
+> ※ Two power outlets are required (one for power, one for detection). Use a power strip if necessary.
 
 ---
 
-## おまけ（Tips）
+## Steps
 
-- 多くのACアダプターにはコンデンサーが内蔵されており、**数秒間は通電が継続**するため、通知に少しラグがある場合があります。
-- 通知の**間隔は main.py の39行目**で変更できます（単位：秒）。  
-  デフォルトは `600`（10分）です。停電発生後、復旧までその間隔で繰り返し通知されます。
+1. **Construct the power path for the Pi**  
+   Keep the mobile battery connected to an outlet and power the Pi from it. The Pi will remain active during outages.
+
+2. **Modify the USB cable**  
+   Cut one end of the cable and extract the red and black wires (or two main lines), strip them, and extend with extra wire. Insulate with tape or heat shrink tubing.
+
+3. **Connect to Raspberry Pi**  
+   Plug the USB end into the AC adapter, and connect the wire ends to the Pi GPIO pins:  
+   - Red wire → 7th pin from top left (GPIO 4)  
+   - Black wire → 8th pin from top left (GND)
+
+4. **Obtain LINE Notify Token**  
+   1. Visit [LINE Notify](https://notify-bot.line.me/ja/)  
+   2. Log in → My Page → "Generate Token"  
+   3. Enter a token name and select the recipient (1-on-1 or group)  
+   4. **Copy the displayed access token**
+
+5. **(For group notifications) Invite LINE Notify to the group**
+
+6. **Prepare the script**  
+   Download `main.py` from this repository, transfer it to the Pi, and paste your token into line 12: `TOKEN = "..."`.
+
+7. **Run the script**  
+   Plug in the AC adapter and run `main.py` using Thonny or similar.  
+   - If the console shows "Monitoring active", it's working  
+   - If you unplug the adapter, you should receive a LINE message: "Power outage detected..."
 
 ---
 
-## ライセンス
+## Tips
+
+- Many AC adapters contain capacitors that **continue supplying power for a few seconds**, which may delay the alert slightly.
+- The **notification interval is set in line 39** of `main.py` (unit: seconds).  
+  Default is `600` (10 minutes). During an outage, messages are sent repeatedly at this interval until recovery.
+
+---
+
+## License
 
 MIT License
